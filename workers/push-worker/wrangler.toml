@@ -1,0 +1,11 @@
+name = "study-bac-telegram-worker"
+main = "src/worker.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+crons = ["*/1 * * * *"] # تشغيل الـ Cron كل دقيقة لفحص التذكيرات
+
+[vars]
+DATABASE_URL = "postgresql://neondb_owner:npg_4TliWGMo0Kdb@ep-late-dawn-ats02rk1-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+TELEGRAM_BOT_TOKEN = "8818803016:AAGAHGidJDs94WsXldeICgrRyPFUiIx9CJk"

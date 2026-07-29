@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+
+  --secondary: #64748b;
+
+  --card: #ffffff;
+  --border: #e2e8f0;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+
+  --radius: 16px;
+    --background: #F8FAFC;
+    --foreground: #0F172A;
+    
+    --primary: #2563EB;
+    --primary-dark: #1D4ED8;
+    --primary-light: #60A5FA;
+    
+    --secondary: #64748B;
+    --secondary-light: #94A3B8;
+    
+    --success: #16A34A;
+    --success-light: #86EFAC;
+    
+    --accent: #7C3AED;
+    --accent-light: #A78BFA;
+    
+    --radius: 16px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+
+  --color-secondary: var(--secondary);
+
+  --color-card: var(--card);
+  --color-border: var(--border);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --radius-xl: var(--radius);
+
+  --font-sans: var(--font-cairo);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-cairo), Arial, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--primary);
+  color: white;
+}

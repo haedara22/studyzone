@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "student",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-07-12",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "images": {
+    "binding": "IMAGES"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "student"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true,
+
+  "vars": {
+    "NEXT_PUBLIC_TELEGRAM_BOT_NAME": "Stu66bot"
+  }
+}
