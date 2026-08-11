@@ -1,0 +1,45 @@
+# Gradle files
+.gradle/
+build/
+gradle/
+!gradle/wrapper/gradle-wrapper.properties
+gradlew
+!gradlew.bat
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio files
+*.iml
+.idea/
+.DS_Store
+
+# Android generated files
+bin/
+gen/
+out/
+release/
+
+# Signing files
+*.keystore
+*.jks
+key.properties
+
+# Google Services (Firebase, etc.)
+google-services.json
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+.cxx/
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/readme.md

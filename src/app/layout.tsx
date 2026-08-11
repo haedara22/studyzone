@@ -5,6 +5,7 @@ import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { useEffect } from "react";
+import { initCapacitor, isNative } from "@/lib/capacitor-init";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -17,6 +18,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  useEffect(() => {
+    // Initialize Capacitor when app loads
+    initCapacitor();
+  }, []);
 
   return (
     <html lang="ar" dir="rtl">

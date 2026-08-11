@@ -1,0 +1,96 @@
+apply plugin: 'com.android.application'
+
+// Load keystore properties if exists
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace "com.studybac.app"
+    compileSdkVersion 34
+    
+    defaultConfig {
+        applicationId "com.studybac.app"
+        minSdkVersion 22
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Enable multidex for legacy devices
+        multiDexEnabled true
+    }
+    
+    // Signing configurations
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
+    
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Sign with keystore if available
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+repositories {
+    flatDir {
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
+    implementation "androidx.core:core-splashscreen:1.0.1"
+    implementation 'androidx.multidex:multidex:2.0.1'
+    
+    // Capacitor dependencies
+    implementation project(':capacitor-android')
+    implementation project(':capacitor-cordova-android-plugins')
+    
+    // Capacitor plugins
+    implementation project(':capacitor-app')
+    implementation project(':capacitor-splash-screen')
+    implementation project(':capacitor-status-bar')
+    implementation project(':capacitor-push-notifications')
+    
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.5"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

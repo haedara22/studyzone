@@ -1,0 +1,138 @@
+name: 🤖 Android Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
+          - aab
+
+jobs:
+  build:
+    name: Build Android App
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: ☕ Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: 🔧 Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          build-tools: 34.0.0
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Next.js Project
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_PUBLIC_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+
+      - name: 🔄 Sync Capacitor
+        run: npx cap sync android
+
+      - name: 🛡️ Make Gradlew Executable
+        working-directory: android
+        run: chmod +x gradlew
+
+      - name: 🔐 Setup Release Keystore
+        if: github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'aab'
+        run: |
+          # Decode keystore from base64
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/studybac-release.keystore
+            echo "✅ Keystore decoded successfully"
+            
+            # Create key.properties
+            cat > android/key.properties << EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=studybac-release.keystore
+          EOF
+            echo "✅ key.properties created"
+          else
+            echo "⚠️ No keystore found - building unsigned release"
+          fi
+
+      - name: 🔨 Build Debug APK
+        if: github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == ''
+        working-directory: android
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: 🔨 Build Release APK
+        if: github.event.inputs.build_type == 'release'
+        working-directory: android
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: 🔨 Build Release AAB
+        if: github.event.inputs.build_type == 'aab'
+        working-directory: android
+        run: ./gradlew bundleRelease --stacktrace
+
+      - name: 🧹 Cleanup Keystore
+        if: always() && (github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'aab')
+        run: |
+          rm -f android/app/studybac-release.keystore
+          rm -f android/key.properties
+          echo "✅ Sensitive files cleaned up"
+
+      - name: 📤 Upload Debug APK
+        if: github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: 📤 Upload Release APK
+        if: github.event.inputs.build_type == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 90
+
+      - name: 📤 Upload Release AAB
+        if: github.event.inputs.build_type == 'aab'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-bundle
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 90
+
+      - name: ✅ Build Complete
+        run: |
+          echo "🎉 Android build completed successfully!"
+          echo "📱 Build Type: ${{ github.event.inputs.build_type || 'debug' }}"
+          echo "📦 Artifacts uploaded. Check the 'Artifacts' section above."

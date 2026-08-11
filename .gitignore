@@ -50,3 +50,17 @@ next-env.d.ts
 
 
 !.dev.vars.example
+
+# Android
+android/build/
+android/.gradle/
+android/local.properties
+android/*.keystore
+android/*.jks
+android/key.properties
+android/app/*.keystore
+android/app/*.jks
+android/google-services.json
+android/gradlew
+android/gradle/
+!android/gradle/wrapper/gradle-wrapper.properties
