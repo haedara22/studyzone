@@ -58,12 +58,17 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
 
-     - name: 📁 Prepare Capacitor Assets Directory
-  run: mkdir -p android/app/src/main/assets
+     - name: 📁 Prepare Capacitor Assets
+  run: |
+    mkdir -p android/app/src/main/assets
+    mkdir -p android/app/src/main/assets/public
+    echo "=== Android main directory ==="
+    ls -la android/app/src/main
+    echo "=== Assets directory ==="
+    ls -la android/app/src/main/assets
 
 - name: 🔄 Sync Capacitor
-  run: npx cap sync android - name: 🔄 Sync Capacitor
-        run: npx cap sync android
+  run: npx cap sync android
 
       - name: 🛡️ Make Gradlew Executable
         working-directory: android
