@@ -62,7 +62,6 @@ jobs:
         run: mkdir -p android/app/src/main/assets
 
       - name: 🔄 Sync Capacitor
-        run: npx cap sync android - name: 🔄 Sync Capacitor
         run: npx cap sync android
 
       - name: 🛡️ Make Gradlew Executable
