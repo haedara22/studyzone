@@ -5,10 +5,10 @@ const config: CapacitorConfig = {
   appName: 'Study Bac',
   webDir: '.open-next/assets',
   
-  // ✅ Production server URL - Android app will load the web app from here
+  // ✅ Production server URL - Android app will load from Cloudflare Workers
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || 'https://student.pages.dev',
-    cleartext: false, // HTTPS only
+    url: 'https://student.giath-motors.workers.dev',
+    cleartext: false,
     androidScheme: 'https'
   },
 

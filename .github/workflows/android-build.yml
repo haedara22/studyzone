@@ -58,6 +58,7 @@ jobs:
           NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '' }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || '' }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY || '' }}
+          NEXT_PUBLIC_APP_URL: 'https://student.giath-motors.workers.dev'
 
       - name: 📁 Prepare Capacitor Assets Directory
         run: mkdir -p android/app/src/main/assets
