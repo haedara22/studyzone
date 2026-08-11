@@ -1,18 +1,20 @@
-name: 🤖 Android Build
+name: Android Build
 
 on:
 push:
-branches: [main, master]
-
+branches:
+- main
+- master
 pull_request:
-branches: [main, master]
-
+branches:
+- main
+- master
 workflow_dispatch:
 inputs:
 build_type:
-description: 'Build Type'
+description: Build Type
 required: true
-default: 'debug'
+default: debug
 type: choice
 options:
 - debug
@@ -26,32 +28,32 @@ runs-on: ubuntu-latest
 
 ```
 steps:
-  - name: 📥 Checkout Repository
+  - name: Checkout Repository
     uses: actions/checkout@v4
 
-  - name: 🟢 Setup Node.js
+  - name: Setup Node.js
     uses: actions/setup-node@v4
     with:
-      node-version: '24'
-      cache: 'npm'
+      node-version: "24"
+      cache: npm
 
-  - name: ☕ Setup Java JDK
+  - name: Setup Java JDK
     uses: actions/setup-java@v4
     with:
-      distribution: 'temurin'
-      java-version: '17'
-      cache: 'gradle'
+      distribution: temurin
+      java-version: "17"
+      cache: gradle
 
-  - name: 🔧 Setup Android SDK
+  - name: Setup Android SDK
     uses: android-actions/setup-android@v3
     with:
       api-level: 34
       build-tools: 34.0.0
 
-  - name: 📦 Install Dependencies
+  - name: Install Dependencies
     run: npm ci
 
-  - name: 🏗️ Build Next.js Project
+  - name: Build Next.js Project
     run: npm run build
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -61,30 +63,26 @@ steps:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
 
-  - name: 📁 Prepare Capacitor Assets
+  - name: Prepare Capacitor Assets
     run: |
       mkdir -p android/app/src/main/assets
       mkdir -p android/app/src/main/assets/public
-
-      echo "=== Android main directory ==="
+      echo "Android assets directory prepared"
       ls -la android/app/src/main
-
-      echo "=== Assets directory ==="
       ls -la android/app/src/main/assets
 
-  - name: 🔄 Sync Capacitor
+  - name: Sync Capacitor
     run: npx cap sync android
 
-  - name: 🛡️ Make Gradlew Executable
+  - name: Make Gradlew Executable
     working-directory: android
     run: chmod +x gradlew
 
-  - name: 🔐 Setup Release Keystore
+  - name: Setup Release Keystore
     if: github.event_name == 'workflow_dispatch' && (github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'aab')
     run: |
       if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
         echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/studybac-release.keystore
-        echo "✅ Keystore decoded successfully"
 
         cat > android/key.properties << EOF
       storePassword=${{ secrets.KEYSTORE_PASSWORD }}
@@ -93,34 +91,33 @@ steps:
       storeFile=studybac-release.keystore
       EOF
 
-        echo "✅ key.properties created"
+        echo "Keystore configured"
       else
-        echo "⚠️ No keystore found - building unsigned release"
+        echo "No keystore found - building unsigned release"
       fi
 
-  - name: 🔨 Build Debug APK
+  - name: Build Debug APK
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.build_type == 'debug'
     working-directory: android
     run: ./gradlew assembleDebug --stacktrace
 
-  - name: 🔨 Build Release APK
+  - name: Build Release APK
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'release'
     working-directory: android
     run: ./gradlew assembleRelease --stacktrace
 
-  - name: 🔨 Build Release AAB
+  - name: Build Release AAB
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'aab'
     working-directory: android
     run: ./gradlew bundleRelease --stacktrace
 
-  - name: 🧹 Cleanup Keystore
+  - name: Cleanup Keystore
     if: always() && github.event_name == 'workflow_dispatch' && (github.event.inputs.build_type == 'release' || github.event.inputs.build_type == 'aab')
     run: |
       rm -f android/app/studybac-release.keystore
       rm -f android/key.properties
-      echo "✅ Sensitive files cleaned up"
 
-  - name: 📤 Upload Debug APK
+  - name: Upload Debug APK
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.build_type == 'debug'
     uses: actions/upload-artifact@v4
     with:
@@ -128,7 +125,7 @@ steps:
       path: android/app/build/outputs/apk/debug/app-debug.apk
       retention-days: 30
 
-  - name: 📤 Upload Release APK
+  - name: Upload Release APK
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'release'
     uses: actions/upload-artifact@v4
     with:
@@ -136,7 +133,7 @@ steps:
       path: android/app/build/outputs/apk/release/app-release.apk
       retention-days: 90
 
-  - name: 📤 Upload Release AAB
+  - name: Upload Release AAB
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.build_type == 'aab'
     uses: actions/upload-artifact@v4
     with:
@@ -144,9 +141,9 @@ steps:
       path: android/app/build/outputs/bundle/release/app-release.aab
       retention-days: 90
 
-  - name: ✅ Build Complete
+  - name: Build Complete
     run: |
-      echo "🎉 Android build completed successfully!"
-      echo "📱 Build Type: ${{ github.event.inputs.build_type || 'debug' }}"
-      echo "📦 Artifacts uploaded. Check the Artifacts section above."
+      echo "Android build completed successfully"
+      echo "Build Type: ${{ github.event.inputs.build_type || 'debug' }}"
+      echo "Artifacts uploaded"
 ```
