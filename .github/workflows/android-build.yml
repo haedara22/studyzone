@@ -65,11 +65,11 @@ steps:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
 
-  - name: Prepare Capacitor Assets
+  - name: Ensure Capacitor Assets Directory
     run: |
       mkdir -p android/app/src/main/assets
       mkdir -p android/app/src/main/assets/public
-      echo "Android assets directory prepared"
+      echo "Capacitor assets directory ready"
       ls -la android/app/src/main
       ls -la android/app/src/main/assets
 
@@ -93,7 +93,7 @@ steps:
       storeFile=studybac-release.keystore
       EOF
 
-        echo "Keystore configured"
+        echo "Keystore configured successfully"
       else
         echo "No keystore found - building unsigned release"
       fi
@@ -118,6 +118,7 @@ steps:
     run: |
       rm -f android/app/studybac-release.keystore
       rm -f android/key.properties
+      echo "Sensitive files cleaned up"
 
   - name: Upload Debug APK
     if: github.event_name != 'workflow_dispatch' || github.event.inputs.build_type == 'debug'
@@ -147,5 +148,5 @@ steps:
     run: |
       echo "Android build completed successfully"
       echo "Build Type: ${{ github.event.inputs.build_type || 'debug' }}"
-      echo "Artifacts uploaded"
-```
+      echo "Artifacts uploaded successfully"
+
