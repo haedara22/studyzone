@@ -1,12 +1,30 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
 import { Badge } from "@/components/ui/badge";
 import { DashboardPreview } from "./dashboard-preview";
 
 export const Hero = () => {
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    router.push("/signup");
+  };
+
+  const handleHowItWorks = () => {
+    // Scroll to features section or navigate to about page
+    const featuresSection = document.getElementById("features");
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: "smooth" });
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
   return (
     <section className="relative min-h-screen overflow-hidden pt-24 md:pt-32">
       {/* Background Gradient */}
@@ -37,10 +55,19 @@ export const Hero = () => {
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="px-8">
+              <Button 
+                size="lg" 
+                className="px-8"
+                onClick={handleGetStarted}
+              >
                 ابدأ رحلتك الآن
               </Button>
-              <Button variant="outline" size="lg" className="px-8">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="px-8"
+                onClick={handleHowItWorks}
+              >
                 كيف يعمل؟
               </Button>
             </div>

@@ -1,17 +1,111 @@
 // ============================================================
-// Service Worker - Study BAC Push & Notification Handler
+// Service Worker - Study BAC Push & Offline Support
 // ============================================================
 
-self.addEventListener("install", () => {
+const CACHE_NAME = "study-bac-v1";
+const OFFLINE_URL = "/offline.html";
+
+// الملفات الأساسية للتخزين المؤقت
+const STATIC_ASSETS = [
+  "/",
+  "/offline.html",
+  "/manifest.json",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/favicon.svg",
+];
+
+// ============================================================
+// Install Event - تثبيت وتخزين الملفات الأساسية
+// ============================================================
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS).catch((err) => {
+        console.warn("Failed to cache some assets:", err);
+      });
+    })
+  );
   self.skipWaiting();
 });
 
+// ============================================================
+// Activate Event - تنظيف الـ caches القديمة
+// ============================================================
 self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
   event.waitUntil(self.clients.claim());
 });
 
 // ============================================================
-// 1. استقبال إشعار الـ Push
+// Fetch Event - استراتيجية Network First مع Fallback
+// ============================================================
+self.addEventListener("fetch", (event) => {
+  // تجاهل الطلبات غير HTTP/HTTPS
+  if (!event.request.url.startsWith("http")) {
+    return;
+  }
+
+  // تجاهل طلبات API للـ write operations
+  if (
+    event.request.method !== "GET" ||
+    event.request.url.includes("/api/") && 
+    (event.request.method === "POST" || 
+     event.request.method === "PUT" || 
+     event.request.method === "DELETE")
+  ) {
+    return;
+  }
+
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // حفظ النسخة في الـ cache إذا كانت ناجحة
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // عند فشل الشبكة، جرب الـ cache
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+
+          // إذا كان طلب navigation (صفحة)، أرجع صفحة offline
+          if (event.request.mode === "navigate") {
+            return caches.match(OFFLINE_URL);
+          }
+
+          // في حالة الفشل التام، أرجع استجابة فارغة
+          return new Response("Offline - Content not available", {
+            status: 503,
+            statusText: "Service Unavailable",
+            headers: new Headers({
+              "Content-Type": "text/plain",
+            }),
+          });
+        });
+      })
+  );
+});
+
+// ============================================================
+// استقبال إشعار الـ Push
 // ============================================================
 self.addEventListener("push", (event) => {
   if (!event.data) return;
@@ -52,15 +146,12 @@ self.addEventListener("push", (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification(
-      payload.title || "Study BAC",
-      options
-    )
+    self.registration.showNotification(payload.title || "Study BAC", options)
   );
 });
 
 // ============================================================
-// 2. معالجة الضغط على الإشعار (Notification Click)
+// معالجة الضغط على الإشعار (Notification Click)
 // ============================================================
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();

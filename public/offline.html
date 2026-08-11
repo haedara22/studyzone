@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>غير متصل بالإنترنت - Study Bac</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 24px;
+        padding: 48px 32px;
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.6s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .icon svg {
+        width: 64px;
+        height: 64px;
+        stroke: white;
+        stroke-width: 2;
+        fill: none;
+      }
+
+      h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 16px;
+        color: #718096;
+        line-height: 1.6;
+        margin-bottom: 32px;
+      }
+
+      .button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 14px 32px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+      }
+
+      .button:active {
+        transform: translateY(0);
+      }
+
+      .features {
+        margin-top: 32px;
+        padding-top: 32px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        text-align: right;
+      }
+
+      .feature-icon {
+        width: 24px;
+        height: 24px;
+        background: #edf2f7;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .feature-text {
+        font-size: 14px;
+        color: #4a5568;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 32px 24px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .icon {
+          width: 100px;
+          height: 100px;
+        }
+
+        .icon svg {
+          width: 52px;
+          height: 52px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+
+      <h1>⚠️ غير متصل بالإنترنت</h1>
+      <p>
+        عذراً، يبدو أنك غير متصل بالإنترنت الآن. بعض الميزات قد لا تعمل بشكل
+        كامل، لكن يمكنك الاستمرار في استخدام التطبيق.
+      </p>
+
+      <a href="javascript:window.location.reload()" class="button">
+        🔄 إعادة المحاولة
+      </a>
+
+      <div class="features">
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">عرض المهام المحفوظة</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">الجدول الدراسي المحفوظ</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">إدارة المواد المحلية</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // محاولة إعادة الاتصال تلقائياً
+      window.addEventListener("online", () => {
+        window.location.reload();
+      });
+
+      // تحقق من الاتصال كل 5 ثوانٍ
+      setInterval(() => {
+        if (navigator.onLine) {
+          window.location.reload();
+        }
+      }, 5000);
+    </script>
+  </body>
+</html>

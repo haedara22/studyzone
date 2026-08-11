@@ -4,6 +4,7 @@ import { Cairo } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { OfflineIndicator } from "@/components/offline-indicator";
 import { useEffect } from "react";
 import { initCapacitor, isNative } from "@/lib/capacitor-init";
 
@@ -34,6 +35,8 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={`${cairo.variable} antialiased`}>
+        {/* مؤشر حالة الاتصال */}
+        <OfflineIndicator />
         
         <div className="flex min-h-screen flex-col">
           <Navbar />

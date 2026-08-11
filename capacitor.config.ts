@@ -9,7 +9,9 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://student.giath-motors.workers.dev',
     cleartext: false,
-    androidScheme: 'https'
+    androidScheme: 'https',
+    // ✅ Allow navigation to local content when offline
+    allowNavigation: ['*'],
   },
 
   plugins: {
@@ -21,9 +23,21 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },
+    // ✅ تفعيل CapacitorHttp للتعامل مع الطلبات بشكل أفضل
+    CapacitorHttp: {
+      enabled: true,
+    },
   },
 
   android: {
+    // ✅ تفعيل WebView مع دعم أفضل للـ offline
+    webContentsDebuggingEnabled: process.env.NODE_ENV === 'development',
+    allowMixedContent: false,
+    captureInput: true,
+    
+    // ✅ تحسينات للأداء
+    useLegacyBridge: false,
+    
     buildOptions: {
       keystorePath: undefined,
       keystorePassword: undefined,
