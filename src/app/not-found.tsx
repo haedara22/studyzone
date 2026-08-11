@@ -43,8 +43,8 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button asChild size="lg" className="w-full sm:w-auto min-w-[200px]">
-              <Link href="/">
+            <Link href="/">
+              <Button size="lg" className="w-full sm:w-auto min-w-[200px]">
                 <svg
                   className="w-5 h-5 ml-2"
                   fill="none"
@@ -59,15 +59,14 @@ export default function NotFound() {
                   />
                 </svg>
                 العودة للرئيسية
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto min-w-[200px]"
-            >
-              <Link href="/dashboard">
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto min-w-[200px]"
+              >
                 <svg
                   className="w-5 h-5 ml-2"
                   fill="none"
@@ -82,8 +81,8 @@ export default function NotFound() {
                   />
                 </svg>
                 لوحة التحكم
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
 
           {/* Quick Links */}
